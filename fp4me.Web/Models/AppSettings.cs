@@ -12,6 +12,5 @@ namespace fp4me.Web.Models
         public bool AcceptingNewUsers { get; set; }
         public string ContactEmailFromAddress { get; set; }
         public string ContactEmailToAddress { get; set; }
-        public string SupportEmailAddress { get; set; }
     }
 }
