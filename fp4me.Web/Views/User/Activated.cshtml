@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Http
+@using fp4me.Web.Controllers
+@model fp4me.Web.Data.Models.IQueryable.GetUsersWithStatisticsModel
+@{
+    ViewData["Title"] = "Activated";
+}
+<h2>Activation Success</h2>
+@if (Model.NumberOfActiveAttractionFastPassRequests > 0)
+{
+    <p>Your account is fully active. fp4me is checking availability for your Fastpass request@(Model.NumberOfActiveAttractionFastPassRequests == 1 ? "" : "s"). When a Fastpass is available, fp4me will send you a text.</p>
+    <button class="btn btn-primary" onclick="window.location='@(Url.Action(nameof(UserController.Dashboard)))'">Manage My Fastpass Checks</button>
+}
+else
+{
+    <p>Your account is fully active. Tap this button to start finding Fastpasses!</p>
+    <button class="btn btn-primary" onclick="window.location='@(Url.Action(nameof(HomeController.Home), nameof(HomeController).Replace("Controller", ""), new { add = true }))'">Create a Fastpass Check</button>
+}
+<p></p>

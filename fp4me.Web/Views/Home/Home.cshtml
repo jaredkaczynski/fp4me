@@ -1,0 +1,131 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Mvc.ViewEngines
+@using fp4me.Web.Controllers
+@using fp4me.Web.Models.HomeViewModels
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Find a Fastpass";
+    var appUser = this.ViewContext.HttpContext.AppUser();
+}
+@if ((appUser != null) && (appUser.IsAuthenticated) && (appUser.UserPlan.MaxAllowedActiveAttractionFastPassRequests <= appUser.UserStatistics.NumberOfActiveAttractionFastPassRequests))
+{
+    <h2>Need more Fastpass Checks?</h2>
+    <p>You've reached your plan limit with @appUser.UserStatistics.NumberOfActiveAttractionFastPassRequests active FP requests. If you’d like to create more, @Html.ActionLink("contact us", nameof(HomeController.Contact)) or go here to manage your active requests:</p>
+    <p><button class="btn btn-primary" onclick="window.location='@(Url.Action(nameof(UserController.Dashboard), nameof(UserController).Replace("Controller", "")))'">Manage FP Requests</button></p>
+    //TODO1: add link to "plans" and explain limits and upgrades
+}
+else
+{ 
+    if (!appUser.IsAuthenticated)
+    {
+        <h2>Need hard-to-find Fastpasses?</h2>
+        <p>Let us help - tell us which Fastpasses you want. When we find availability, we’ll send you a text. You'll be the first to know! It’s that easy.</p>
+    }
+    else
+    {
+        <h2>Which Fastpass do you want?</h2>
+    }
+    <div class="row">
+        <div class="col-xs-12">
+            <section>
+                <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <div class="styled-select">
+                            <select asp-for="Date" class="form-control cookie">
+                                @for (var i = 0; i <= 60; i++)
+                                {
+                                    var date = System.DateTime.UtcNow.AddDays(i);
+                                    <option value="@date.ToShortDateString()">@date.ToLongDateString()</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="styled-select">
+                            <select asp-for="AttractionID" class="form-control cookie">
+                                @if (Model.PriorityAttractions != null && Model.PriorityAttractions.Any())
+                                {
+                                    @foreach (Tuple<long, long, string> tuple in Model.PriorityAttractions.OrderBy(p => p.Item1))
+                                    {
+                                        <option value="@tuple.Item2">@tuple.Item3</option>
+                                    }
+                                    <option disabled>──────────</option>
+                                }
+                                @foreach (var item in Model.Attractions)
+                                {
+                                    <option value="@item.Key">@item.Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row no-gutter col-spacing-1 option-strip">
+                            <div class="col-xs-3 text-center"><div class="option" name="NumberOfPeople" value="1">1</div></div>
+                            <div class="col-xs-3 text-center"><div class="option" name="NumberOfPeople" value="2">2</div></div>
+                            <div class="col-xs-3 text-center"><div class="option" name="NumberOfPeople" value="3">3</div></div>
+                            <div class="col-xs-3 text-center"><div class="option" name="NumberOfPeople" value="4">4+</div></div>
+                        </div>
+                        <input asp-for="NumberOfPeople" value="2" type="hidden" />
+                    </div>
+                    <div class="form-group">
+                        @if (this.Context.AppUser().IsAuthenticated)
+                        {
+                            <input name="SMSNotificationPhoneNumber" value="@(this.Context.AppUser().SMSNotificationPhoneNumber)" type="hidden" />
+                        }
+                        else
+                        {
+                            <input asp-for="SMSNotificationPhoneNumber" class="form-control phone cookie" />
+                        }
+                    </div>
+                    <div class="form-group" style="text-align: right;">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            @{ var cookiePath = this.ViewContext.View.PathWithoutExtension(); }
+
+            $(".option-strip .option").click(function () {
+                var name = $(this).attr("name");
+                var value = $(this).attr('value');
+                $("input[name='" + name + "']").val(value);
+                $(".option-strip .option[name='" + name + "']").removeClass("selected");
+                $(this).addClass('selected');
+                Cookies.set('@(cookiePath)-' + name, value);
+            });
+
+            $('label.phone').text(function (i, text) {
+                return text.replace(/(\d\d\d)(\d\d\d)(\d\d\d\d)/, '($1) $2-$3');
+            });
+            
+            // determine default values for this form by looking at cookies and using
+            // specific values as a fallback
+            var defaultDate = '@(System.DateTime.Now.AddDays(30).ToShortDateString())';
+            defaultDate = Cookies && Cookies.get('@(cookiePath)-Date') || defaultDate;
+            var defaultNumberOfPeople = Cookies && Cookies.get('@(cookiePath)-NumberOfPeople') || 2;
+
+            $('#Date').val(defaultDate);
+            $('#AttractionID').val(Cookies && Cookies.get('@(cookiePath)-AttractionID') || $("#AttractionID").find("option:first-child").val());
+            $('.option[name="NumberOfPeople"][value=' + defaultNumberOfPeople + ']').addClass("selected");
+            $("input[name='NumberOfPeople']").val(defaultNumberOfPeople);
+            $('#SMSNotificationPhoneNumber.cookie').val(Cookies && Cookies.get('@(cookiePath)-SMSNotificationPhoneNumber') || '');
+
+            // whenever one of the cookie'd fields changes, save the value
+            $('.cookie').change(function () {
+                Cookies.set('@(cookiePath)-' + $(this).attr('name'), $(this).val());
+            });
+
+            $('#SMSNotificationPhoneNumber').select();
+
+        });
+    </script>
+}

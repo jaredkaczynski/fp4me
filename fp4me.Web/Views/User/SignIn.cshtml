@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Mvc.ViewEngines
+@using fp4me.Web.Controllers
+@model fp4me.Web.Models.UserViewModels.SignInViewModel
+@{
+    ViewData["Title"] = "Sign In";
+    bool highlightWaitlistMessage = ViewData.Keys.Contains("HighlightWaitlistMessage") && (bool)ViewData["HighlightWaitlistMessage"];
+}
+<h2>Sign In by Phone Number</h2>
+<div class="row">
+    <div class="col-xs-12">
+        <section>
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <input asp-for="WaitlistCode" type="hidden" />
+                    <input asp-for="PhoneNumber" style="width: 150px; display: inline-block; margin-right: 10px;" class="form-control cookie" />
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12" style="@(highlightWaitlistMessage ? "color:red !important;" : "")">
+        <p>Due to an overwhelming number of new users, fp4me has started a waitlist for new user signups.</p>
+        <p><strong><a style="@(highlightWaitlistMessage ? "color:red !important;" : "")" asp-action="@nameof(HomeController.ContactForWaitingListSignup)" asp-controller="@nameof(HomeController).Replace("Controller", "")">If you're a new user, click here to join the waitlist</a></strong>.</p>
+    </div>
+</div>
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script type="text/javascript">
+        
+        @{ var cookiePath = this.ViewContext.View.PathWithoutExtension(); }
+
+        if (!$('#PhoneNumber').val()) {
+            $('#PhoneNumber').val(Cookies && Cookies.get('@(cookiePath)-PhoneNumber') || '');
+        }
+        $('#PhoneNumber').select();
+
+        // whenever one of the cookie'd fields changes, save the value
+        $('.cookie').change(function () {
+            Cookies.set('@(cookiePath)-' + $(this).attr('name'), $(this).val());
+        });
+        
+    </script>
+}

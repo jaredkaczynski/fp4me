@@ -1,0 +1,80 @@
+﻿@model fp4me.Web.Models.UserViewModels.DashboardViewModel
+@*
+    
+THIS FILE ONLY EXISTS AS A BACKUP TO THE TABLE STRUCTURE FOR VIEWING CHECKS
+
+*@
+@{ 
+    var orderedItems = Model.AttractionFastPassRequestsWithStatistics;
+}
+<section>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Park
+                </th>
+                <th>
+                    Attraction
+                </th>
+                <th>
+                    Guests
+                </th>
+                <th>
+                    Next
+                </th>
+                <th>
+                    Last
+                </th>
+                <th>
+                    Last Hit
+                </th>
+                <th>
+                    Total
+                </th>
+                <th>
+                    Hits
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in orderedItems)
+            {
+                <tr>
+                    <td>
+                        @item.Date.ToString("yyyy-MM-dd")
+                    </td>
+                    <td>
+                        @item.ParkName
+                    </td>
+                    <td>
+                        @item.AttractionName
+                    </td>
+                    <td>
+                        @item.NumberOfPeople
+                    </td>
+                    <td>
+                        next check
+                    </td>
+                    <td>
+                        @(item.LastCheckTimestamp.HasValue ? item.LastCheckTimestamp.Value.ToRelativeDateString(int.MaxValue, "yyyy-MM-dd h:mm:ss tt") : "")
+                    </td>
+                    <td>
+                        @(item.LastAvailableCheck.HasValue ? item.LastAvailableCheck.Value.ToRelativeDateString(int.MaxValue, "yyyy-MM-dd h:mm:ss tt") : "")
+                    </td>
+                    <td>
+                        @item.NumberOfChecks
+                    </td>
+                    <td>
+                        @item.NumberOfAvailableChecks
+                    </td>
+                    <td></td>
+                </tr>
+                            }
+        </tbody>
+    </table>
+</section>

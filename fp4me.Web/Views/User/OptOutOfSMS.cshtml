@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Mvc.ViewEngines
+@using fp4me.Web.Controllers
+@using fp4me.Web.Models.UserViewModels
+@model OptOutOfSMSViewModel
+@{
+    var formattedPhoneNumber = Helpers.FormatPhoneNumber(Model.PhoneNumber);
+    ViewData["Title"] = "Opt Out of SMS";
+}
+<h2>Opt-out of SMS</h2>
+<section>
+    <p>We're VERY sorry if you are receiving unwanted SMS messages from this site. If you'd like to opt-out of these messages, click the button below.</p>
+</section>
+<section>
+    <form method="post">
+        <button type="submit" class="btn btn-primary">Stop Sending SMS to @(formattedPhoneNumber)</button>
+        <input asp-for="PhoneNumber" type="hidden" />
+        <input asp-for="OptOutToken" type="hidden" />
+    </form>
+</section>

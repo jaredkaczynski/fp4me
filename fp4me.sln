@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fp4me.Web", "fp4me.Web\fp4me.Web.csproj", "{CA078976-7247-41F8-82A2-F3F4FCFF15DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Disney", "Disney\Disney.csproj", "{752AD7C8-2A41-422B-A415-50B4B175E0EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpers", "Helpers\Helpers.csproj", "{039B5915-6ADC-44D8-9EF0-1137B023FBDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA078976-7247-41F8-82A2-F3F4FCFF15DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA078976-7247-41F8-82A2-F3F4FCFF15DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA078976-7247-41F8-82A2-F3F4FCFF15DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA078976-7247-41F8-82A2-F3F4FCFF15DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{752AD7C8-2A41-422B-A415-50B4B175E0EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{752AD7C8-2A41-422B-A415-50B4B175E0EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{752AD7C8-2A41-422B-A415-50B4B175E0EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{752AD7C8-2A41-422B-A415-50B4B175E0EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{039B5915-6ADC-44D8-9EF0-1137B023FBDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{039B5915-6ADC-44D8-9EF0-1137B023FBDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{039B5915-6ADC-44D8-9EF0-1137B023FBDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{039B5915-6ADC-44D8-9EF0-1137B023FBDF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E40A1F01-4BD8-4A35-A448-F7B23B53CBE7}
+	EndGlobalSection
+EndGlobal

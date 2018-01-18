@@ -1,0 +1,120 @@
+﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
+@using Microsoft.AspNetCore.Http
+@using fp4me.Web.Controllers
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - fp4me.Web</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    @*TODO2: add google analytics*@
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row no-gutter" >
+                <div class="col-xs-5">
+                    @if (this.ViewContext.HttpContext.AppUser().IsAuthenticated)
+                    {
+                        <span><a asp-area="" asp-controller="User" asp-action="Dashboard" class="fa fa-home" style="font-size: 22px; position:relative; top: 3px; margin-right: 6px"></a></span>
+                        <span><a asp-area="" asp-controller="User" asp-action="Dashboard">@Helpers.FormatPhoneNumber(this.ViewContext.HttpContext.AppUser().SMSNotificationPhoneNumber)</a></span>
+                    }
+                    else
+                    {
+                        <a asp-area="" asp-controller="Home" asp-action="Home"><span class="fa fa-home" style="font-size: 22px; position:relative; top: 3px; margin-right: 6px"></span></a>
+                    }
+                </div>
+                <div class="col-xs-7 text-right">
+                    <a asp-area="" asp-controller="Home" asp-action="About">About</a>
+                    <a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
+                    @if (this.Context.AppUser().IsAuthenticated)
+                    {
+                        <button class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="Home" asp-route-add="true">+ Add FP</button>
+                    }
+                    @if (!this.Context.AppUser().IsAuthenticated)
+                    {
+                        <button class="btn btn-primary" asp-area="" asp-controller="User" asp-action="SignIn">Sign In</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+    <hr />
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    @if (this.ViewContext.HttpContext.AppUser().IsAuthenticated)
+                    {
+                        if (this.ViewContext.HttpContext.AppUser().IsAdmin)
+                        {
+                            <span style="margin-right: 5px">@Html.ActionLink("Test", nameof(HomeController.Test), nameof(HomeController).Replace("Controller", ""))</span>
+                        }
+                        <span>@Html.ActionLink("Sign Out", nameof(UserController.SignOut), nameof(UserController).Replace("Controller", ""))</span>
+                    }
+                    <p></p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 text-center" style="color: darkgray; font-style: italic; font-size: 13px">
+                    &copy; 2017 - fp4me - by using this site, you agree to the privacy and terms as listed on the About page.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/tippy.js@2.0.8/dist/tippy.all.min.js"></script>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script src="~/lib/js-cookie/js.cookie.js"></script>
+    <script src="~/lib/jquery-dateFormat/jquery-dateFormat.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            Cookies.set('timezoneOffset', -1 * (new Date()).getTimezoneOffset());
+
+            $("button[formaction]").click(function () {
+                window.location = $(this).attr("formaction");
+            });
+
+        });
+    </script>
+</body>
+</html>

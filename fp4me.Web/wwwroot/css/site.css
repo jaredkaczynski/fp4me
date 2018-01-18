@@ -1,0 +1,296 @@
+﻿
+.container {
+    max-width: 500px;
+}
+
+/* Carousel */
+.carousel-caption p {
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* Make .svg files in the carousel display properly in older browsers */
+.carousel-inner .item img[src$=".svg"] {
+    width: 100%;
+}
+
+/* QR code generator */
+#qrCode {
+    margin: 15px;
+}
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    /* Hide captions */
+    .carousel-caption {
+        display: none;
+    }
+}
+
+.header {
+    border-bottom: 1px solid rgb(234, 234, 234);
+    padding: 5px 0 5px 0;
+    color: white;
+    background-color: rgb(62,112,226);
+    line-height: 36px;
+}
+
+    .header .btn {
+        background-color: transparent;
+        border: 1px solid white;
+        margin-left: 10px;
+        font-size: 13px;
+    }
+    .btn.borderless {
+        border: 0px;
+    }
+
+    .header a {
+        color: white;
+        text-decoration: none;
+        font-size: 15px;
+        position: relative;
+        top: 1px;
+        font-size: 13px;
+    }
+
+        .header a:not(:first-child) {
+            margin-left: 10px;
+        }
+
+div.banner {
+    padding-top: 10px;
+    padding-bottom: 9px;
+    line-height: 18px;
+    background-color: lightgray;
+}
+
+    div.banner.success {
+        background-color: rgb(62,112,226);
+        color: white;
+    }
+
+    div.banner.error {
+        background-color: red;
+        color: white;
+    }
+
+    div.banner.warning {
+        background-color: yellow;
+    }
+
+.attractionFastPassRequests {
+    margin-bottom: 30px;
+}
+
+    .attractionFastPassRequests .attractionFastPassRequest:not(:last-child) {
+        margin-bottom: 30px;
+    }
+
+.attractionFastPassRequest .row {
+    margin-bottom: 10px;
+}
+
+.attractionFastPassRequests .shade {
+    background-color: rgb(244,244,244);
+}
+
+.attractionFastPassRequest {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.attractionFastPassRequests .delete {
+    color: red;
+    font-size: 18px;
+}
+
+.attractionFastPassRequests .numberOfGuests {
+    font-size: 16px;
+    margin-right: 6px;
+}
+
+.attractionFastPassRequests .check-history {
+    font-size: 12px;
+}
+
+.attractionFastPassRequests .stats-header {
+    color: dimgray;
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 0;
+    border-bottom: 1px solid white;
+}
+
+.attractionFastPassRequests .stats-header-label {
+    padding-top: 3px;
+    background-color: rgb(244,244,244);
+}
+
+.attractionFastPassRequests .stats {
+    color: dimgray;
+    font-size: 14px;
+}
+
+.attractionFastPassRequests .button {
+    padding: 5px 0;
+}
+
+.attractionFastPassRequests .title {
+    font-size: 18px;
+    font-weight: bold;
+}
+.attractionFastPassRequestContainer 
+{
+    margin-bottom: 10px;
+}
+.attractionFastPassRequestContainer.highlight {
+    padding-top: 10px;
+}
+
+.attractionFastPassRequestContainer.highlight {
+    background: rgb(225,233,251);
+}
+
+.row.no-gutter {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+    .row.no-gutter [class*='col-']:not(:first-child),
+    .row.no-gutter [class*='col-']:not(:last-child) {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+.row.col-spacing-3 [class*='col-']:not(:first-child) {
+    padding-left: 3px;
+}
+
+.row.col-spacing-3 [class*='col-']:not(:last-child) {
+    padding-right: 3px;
+}
+
+.row.col-spacing-1 [class*='col-']:not(:first-child) {
+    padding-left: 1px;
+}
+
+.row.col-spacing-1 [class*='col-']:not(:last-child) {
+    padding-right: 1px;
+}
+
+.tippy-content {
+    font-size: 15px;
+}
+
+.styled-select {
+    background-color: rgb(244,244,244);
+}
+
+    .styled-select select {
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        height: 50px;
+        padding: 15px 15px;
+    }
+
+.form-control {
+    -webkit-box-shadow: 0 0 0;
+    box-shadow: 0 0 0;
+}
+
+.form-group .btn-group {
+    width: 100%;
+    background-color: rgb(244,244,244);
+}
+
+    .form-group .btn-group button {
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-right: 2px;
+        border: 0;
+        height: 50px;
+        font-size: 16px;
+        background-color: rgb(244, 244,244);
+    }
+
+.numberOfPeople.btn-group button {
+    width: 60px;
+    text-align: center;
+}
+
+input.form-control, textarea.form-control {
+    background-color: rgb(244,244,244);
+    border: 0;
+    font-size: 16px;
+    height: 50px;
+    border-radius: 0px;
+}
+
+.checking-animation {
+    background-image: url('../images/loading-small.gif');
+    width: 26px;
+    height: 8px;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.btn {
+    background-color: rgb(62,112,226);
+    font-size: 15px;
+    height: 38px;
+}
+
+    button:not(:last-child) {
+        margin-right: 3px;
+    }
+
+    h1,h2,h3 {line-height: 1.4}
+
+h1 {
+    font-size: 24px;
+    font-weight: normal;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: normal;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: normal;
+    margin-top: 20px;
+}
+
+label {
+    font-weight: normal;
+}
+
+.option-strip {
+    height: 48px;
+    line-height: 50px;
+}
+
+    .option-strip .option {
+        border-top: 2px solid rgb(244,244,244); /* rgb(62,112,226); */
+        background-color: rgb(244,244,244);
+    }
+
+        .option-strip .option.selected {
+            border-top: 2px solid black; /* rgb(62,112,226); */
+        }
+
+.validation-summary-errors ul {
+    padding-left: 0;
+}
+
+.validation-summary-errors li {
+    display: block;
+}
+
+.btn-primary {
+    background-color: rgb(62,112,226);
+    border-color: rgb(62,112,226);
+}

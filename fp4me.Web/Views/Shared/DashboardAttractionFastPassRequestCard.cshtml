@@ -1,0 +1,109 @@
+﻿@using fp4me.Web.Extensions
+@model fp4me.Web.Models.UserViewModels.DashboardAttractionFastPassRequestCardViewModel
+@{
+    var item = Model.GetAttractionFastPassRequestsWithStatistics;
+    var dateString = String.Empty;
+    var NumberOfUnAvailableResults = item.NumberOfChecks - item.NumberOfAvailableChecks;
+    DateTime nextCheck;
+    if (item.LastCheckStatus == "AVAILABLE")
+    {
+        nextCheck = item.LastCheckDate.GetValueOrDefault(new DateTime(1980, 1, 1)).AddMinutes(Model.UserPlan.PauseFrequencyInMinutes);
+    }
+    else
+    {
+        nextCheck = item.LastCheckDate.GetValueOrDefault(new DateTime(1980, 1, 1)).AddMinutes(Model.UserPlan.CheckFrequencyInMinutes);
+    }
+    nextCheck = nextCheck <= DateTime.UtcNow.AddMinutes(Model.HowOftenTheSystemChecksAndProcessesAttractionFastPassRequestsInMinutes.GetValueOrDefault(0)) ? DateTime.UtcNow.AddMinutes(Model.HowOftenTheSystemChecksAndProcessesAttractionFastPassRequestsInMinutes.GetValueOrDefault(0)) : nextCheck;
+    var nextCheckString = String.Format("Next check in {0}", nextCheck <= DateTime.UtcNow.AddMinutes(Model.HowOftenTheSystemChecksAndProcessesAttractionFastPassRequestsInMinutes.GetValueOrDefault(0)) ? String.Format("less than {0} minutes", Model.HowOftenTheSystemChecksAndProcessesAttractionFastPassRequestsInMinutes.GetValueOrDefault(0)) : nextCheck.ToRelativeDateString());
+    var statusText = String.Empty;
+    if (string.IsNullOrEmpty(item.LastCheckStatus))
+    {
+        statusText = "First check is being processed. Stay tuned!";
+    }
+    else if (item.LastCheckStatus.ToLowerInvariant() == "AVAILABLE".ToLowerInvariant())
+    {
+        statusText = "FP Available";
+    }
+    else if (item.LastCheckStatus.ToLowerInvariant() == "UNAVAILABLE".ToLowerInvariant())
+    {
+        statusText = "FP Not Available";
+    }
+    else 
+    {
+        statusText = "FP Check Error Occurred";
+    }
+    
+    <div id="@item.AttractionFastPassRequestID" class="attractionFastPassRequest @((item.LastCheckStatus ?? "none").ToLowerInvariant())">
+        <div class="row">
+            <div class="col-xs-9 title">@item.AttractionName</div>
+            <div class="col-xs-3 text-right" style="margin-top: 2px;">
+                <span class="numberOfGuests" title="@String.Format("{0} Guest{1}", item.NumberOfPeople, item.NumberOfPeople == 1 ? "" : "s")">
+                    <span>@item.NumberOfPeople</span>
+                    <span class="fa fa-user-o"></span>                    
+                </span>
+                <span class="fa fa-trash delete"></span>
+            </div>
+        </div>
+        <div class="row check-history">
+            @if (item.NumberOfChecks > 0)
+            {
+                @foreach (var check in Model.RecentChecksForAttractionFastPassRequests)
+                {
+                    <div class="col-xs-12">
+                        <span>Checked @check.Timestamp.ToRelativeDateString("{0} ago", "just now", 30) on </span><span class="utc-date" data-utc-date-timestamp="@check.Timestamp.ToUnixEpochInMilliseconds()" data-utc-date-output-format="M/d @@ h:mm a">@check.Timestamp.ToContextTimezone(this.ViewContext.HttpContext).ToString("M/d @ h:mm tt")</span><span>: @(check.AttractionFastPassStatus == "AVAILABLE" ? "FP Found!" : "No FPs")</span>
+                    </div>
+                }
+                <div class="col-xs-12">
+                    <i>@nextCheckString</i>
+                </div>
+            }
+            else
+            {
+                <div class="col-xs-12"><div>Checking now...<span class="checking-animation"></span></div></div>
+            }
+        </div>
+        <div class="row no-gutter col-spacing-3 stats-header">
+            <div class="col-xs-4 text-center"><div class="stats-header-label">CHECKS</div></div>
+            <div class="col-xs-4 text-center"><div class="stats-header-label">FOUND FPs</div></div>
+            <div class="col-xs-4 text-center"><div class="stats-header-label">LAST FOUND FP</div></div>
+        </div>
+        <div class="row no-gutter col-spacing-3 stats">
+            @{
+                var availablesFoundTitle = "No Available FPs have been found yet";
+                if (item.NumberOfAvailableChecks == 1)
+                {
+                    availablesFoundTitle = "1 Available FP has been found";
+                }
+                else if (item.NumberOfAvailableChecks > 1)
+                {
+                    availablesFoundTitle = String.Format("{0} Available FPs have been found", item.NumberOfAvailableChecks);
+                }
+
+                var numberOfChecksTitle = "This FP hasn't been checked yet.";
+                if (item.NumberOfChecks == 1)
+                {
+                    numberOfChecksTitle = "This FP has been checked 1 time";
+                }
+                else if (item.NumberOfChecks > 1)
+                {
+                    numberOfChecksTitle = String.Format("This FP has been checked {0} times", item.NumberOfChecks);
+                }
+            }
+            <div class="col-xs-4 text-center"><div title="@numberOfChecksTitle" class="shade button"><span>@(item.NumberOfChecks)</span></div></div>
+            <div class="col-xs-4 text-center"><div title="@availablesFoundTitle" class="shade button"><span>@(item.NumberOfAvailableChecks)</span></div></div>
+            @if (item.LastAvailableCheck.HasValue)
+            {
+                var titleWithoutDate = String.Format("Last Found FP - {0}", item.LastAvailableCheck.Value.ToRelativeDateString("{0} ago", "just now", 30));
+                var title = String.Format("{0} on {1}", titleWithoutDate, item.LastAvailableCheck.Value.ToContextTimezone(this.ViewContext.HttpContext).ToString("M/d @ h:mm tt"));
+                var titleAttributeFormat = String.Format("'{0} on 'M/d @ h:mm a", titleWithoutDate);
+                <div class="col-xs-4 text-center"><div title="@title" class="shade button utc-date" data-utc-date-timestamp="@item.LastAvailableCheck.Value.ToUnixEpochInMilliseconds()" data-utc-date-output-format="@titleAttributeFormat" data-utc-date-output-attribute-name="title"><span>@item.LastAvailableCheck.Value.ToRelativeDateString("{0} ago", "just now", 30)</span></div></div>
+            }
+            else
+            {
+                <div class="col-xs-4 text-center"><div title="No Available FPs have been found yet" class="shade button"><span>none yet</span></div></div>
+            }
+
+        </div>
+
+    </div>
+}

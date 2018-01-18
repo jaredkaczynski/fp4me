@@ -1,0 +1,14 @@
+﻿@using fp4me.Web.Controllers
+@model string
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Sign In";
+}
+<h2>Uh oh!</h2>
+<section>
+    <p>Phone number @(Helpers.FormatPhoneNumber(Model)) has reached the limit for requesting sign in codes without a successful sign in attempt.</p>
+    <p>@Html.ActionLink("Click here to contact us", nameof(HomeController.Contact), nameof(HomeController).Replace("Controller", "")) for help with this account.</p>
+</section>
+<section>
+    <p><button class="btn btn-primary" onclick="window.location='@(Url.Action(nameof(UserController.SignIn), nameof(UserController).Replace("Controller", "")))'">Sign In with a Different Phone Number</button></p>
+</section>

@@ -1,0 +1,73 @@
+﻿@using fp4me.Web.Controllers
+@model fp4me.Web.Models.HomeViewModels.ContactViewModel
+<h2>Contact</h2>
+<div class="row">
+    <div class="col-xs-12">
+        <form>
+            <div class="form-group">
+                <p>
+                    <span asp-validation-for="Message" class="text-danger"></span>
+                    <textarea asp-for="Message" style="height: 180px;" class="form-control"></textarea>
+                </p>
+                <p>
+                    <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                    <input asp-for="EmailAddress" class="form-control" placeholder="your email address (so that we can reply)" />
+                </p>
+            </div>
+            <p>
+                <button type="submit" class="btn btn-primary">Send</button>
+                <span id="result" style="display: none"></span>
+            </p>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        function PutSendButtonInSendingState() {
+            var button = $("button[type='submit']");
+            button.addClass("disabled");
+            button.html("Sending...");
+        }
+
+        function PutSendButtonInSendState() {
+            var button = $("button[type='submit']");
+            button.removeClass("disabled");
+            button.html("Send");
+        }
+
+        $("form").submit(function () {
+            if ($("form").valid()) {
+                $("#result").hide();
+                PutSendButtonInSendingState();
+                $.ajax({
+                    url: '@Url.Action(nameof(HomeController.SendContactMessage), nameof(HomeController).Replace("Controller", ""))',
+                    type: "POST",
+                    traditional: true,
+                    data: { message: $("#Message").val(), emailAddress: $("#EmailAddress").val() },
+                    success: function (data) {
+                        $("#result").html("Message sent. Thank you!");
+                    },
+                    error: function () {
+                        $("#result").html("Sorry! An error occurred sending your message.");
+                    },
+                    complete: function () {
+                        PutSendButtonInSendState();
+                        $("#result").show();
+                    }
+                });
+                return false;
+            }
+        });
+
+        @if (!string.IsNullOrEmpty(Model.Focus))
+        {
+            @:$("#@(Model.Focus)").select();
+        }
+
+    });
+
+    </script>
+}

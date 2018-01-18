@@ -1,0 +1,225 @@
+﻿@using Microsoft.AspNetCore.Http
+@using fp4me.Web.Models.HomeViewModels
+@using fp4me.Web.Controllers
+@using fp4me.Web.Models.UserViewModels
+@using Microsoft.AspNetCore.Http
+@model fp4me.Web.Models.UserViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var orderedItems = Model.AttractionFastPassRequestsWithStatistics
+        .Where(p =>
+            p.Status == fp4me.Web.Data.Models.AttractionFastPassRequestStatusEnum.Active
+            && p.Date >= DateTime.UtcNow.Date)
+        .OrderBy(p => p.Date)
+        .ThenBy(p => p.ParkName)
+        .ThenBy(p => p.AttractionName)
+        .ThenBy(p => p.NumberOfPeople);
+    var uniqueDates = orderedItems.GroupBy(p => p.Date).Select(p => p.Key.Date).Distinct().OrderBy(p => p);
+}
+@if (!this.ViewContext.HttpContext.AppUser().IsActivated)
+{
+    <h2>Activation Required</h2>
+    @if (Model.IsFirstSavedAttractionFastPassRequestForUser)
+    {
+        <p>Congrats on making your first fastpass request! We'll be checking day and night. When we find one that's available, we'll send you a text.</p>
+        <p>But first you need to activate your account.</p>
+    }
+    else
+    {
+        <p>Before we start checking for your fastpasses, you need to activate your account.</p>
+    }
+    var phoneNumber = this.ViewContext.HttpContext.AppUser().SMSNotificationPhoneNumber;
+    var buttonText = String.Format("Send Activation Code to {0}", Helpers.FormatPhoneNumber(phoneNumber));
+    <p>Check your text messages at @Helpers.FormatPhoneNumber(phoneNumber) to find your activation code or click here to get a new one:</p>
+    <button class="btn btn-primary" onclick="window.location='@(Url.Action(nameof(UserController.SendNewSignInLink), new { phoneNumber = phoneNumber }))'">@buttonText</button>
+}
+else
+{
+    if (Model.IsFirstSavedAttractionFastPassRequestForUser)
+    {
+        <h2>Congrats!</h2>
+        <p>Your first Fastpass request is saved. We'll be checking day and night. When we find one that's available, we'll send you a text.</p>
+        <p>We check each Fastpass about every 10 minutes. Refresh this page to see the latest activity for each of your requests.</p>
+    }
+    <div class="dashboard-content">
+        @if (!orderedItems.Any())
+        {
+            <h2>Got Fastpass Plans?</h2>
+            <p>If you need a Fastpass and are tired of checking online, let us do it for you. Tap the button below to create a new Fastpass check and we'll send you a text when one becomes available. It's that easy.</p>
+        }
+        else
+        {
+            <section class="attractionFastPassRequests">
+                @foreach (var date in uniqueDates)
+                {
+                    var itemsForThisDate = orderedItems.Where(p => p.Date == date).ToList();
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h3 style="margin-bottom: 20px">@date.ToString("dddd MMM dd, yyyy")</h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        @for (var i = 0; i < itemsForThisDate.Count(); i++)
+                        {
+                            var item = itemsForThisDate.ElementAt(i);
+                            <div class="col-xs-12 attractionFastPassRequestContainer @(Model.NewAttractionFastPassRequestID == item.AttractionFastPassRequestID ? "highlight" : "")" id="@item.AttractionFastPassRequestID">
+                                @Html.Partial("DashboardAttractionFastPassRequestCard", new DashboardAttractionFastPassRequestCardViewModel
+                                {
+                                    GetAttractionFastPassRequestsWithStatistics = item,
+                                    UserPlan = Model.UserPlan,
+                                    RecentChecksForAttractionFastPassRequests = Model.RecentChecksForAttractionFastPassRequests.Where(p => p.AttractionFastPassRequestID == item.AttractionFastPassRequestID),
+                                    HowOftenTheSystemChecksAndProcessesAttractionFastPassRequestsInMinutes = Model.HowOftenTheSystemChecksAndProcessesAttractionFastPassRequestsInMinutes
+                                })
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        }
+        <div class="row" style="margin-bottom: 20px">
+            <div class="col-xs-12">
+                <button class="btn btn-primary" onclick="window.location='@(Url.Action(nameof(UserController.AddFPCheck), nameof(UserController).Replace("Controller", "")))'">Create a New Fastpass Check</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="dropdown" id="actions" style="position: absolute">
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="actions-menu">
+            <li><a href="#" id="delete">Delete this FP Check</a></li>
+        </ul>
+    </div>
+}
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            convertDates();
+            initTippy();
+
+            $(document).on("click", ".attractionFastPassRequest .delete", function (e) {
+                showActionMenu(e, $(this));
+                e.stopPropagation();
+            });
+
+            $(document).on("click", function (event) {
+                var $trigger = $("#actions");
+                if ($trigger !== event.target && !$trigger.has(event.target).length) {
+                    $("#actions").removeClass('open');
+                }
+            });
+
+            scrollIntoViewIfNeeded($(".attractionFastPassRequestContainer.highlight"),
+                {
+                    always: function () {
+                        $(".attractionFastPassRequestContainer.highlight").css("transition", "2s");
+                        $(".attractionFastPassRequestContainer.highlight").css("background", "transparent");
+                    }
+                });
+
+            @if (Model.AttractionFastPassRequestsWithStatistics.Any(p => p.Status == fp4me.Web.Data.Models.AttractionFastPassRequestStatusEnum.Active && p.NumberOfChecks < 1))
+            {
+                <text>
+                var attractionFastPassRequestIDsArray = '@string.Join(',', Model.AttractionFastPassRequestsWithStatistics.Where(p => p.Status == fp4me.Web.Data.Models.AttractionFastPassRequestStatusEnum.Active && p.NumberOfChecks < 1).Select(p => p.AttractionFastPassRequestID).ToArray())'.split(',');
+                $.ajax({
+                    url: '@Url.Action(nameof(UserController.ProcessAttractionFastPassRequests))',
+                    type: "GET",
+                    traditional: true,
+                    data: { attractionFastPassRequestIDs: attractionFastPassRequestIDsArray},
+                    success: function (data) {
+                        updateAttractionFastPassRequestCards(attractionFastPassRequestIDsArray);
+                    },
+                    error: function()
+                    {
+                        //do nothing
+                    }
+                });
+                </text>
+            }
+
+        });
+
+        function updateAttractionFastPassRequestCards(attractionFastPassRequestIDsArray) {
+            $.ajax({
+                url: '@Url.Action(nameof(UserController.DashboardAttractionFastPassRequestCardAsync))',
+                type: "GET",
+                traditional: true,
+                data: { attractionFastPassRequestIDs: attractionFastPassRequestIDsArray },
+                success: function (data) {
+                    data.forEach(function (element) {
+                        $(".attractionFastPassRequestContainer#" + element.key).html(element.value);
+                    });
+                    convertDates();
+                    initTippy();
+                },
+                error: function()
+                {
+                    //do nothing
+                }
+            });
+        }
+
+        function initTippy() {
+            tippy('[title]', {
+                arrow: true
+            });
+        }
+
+        function convertDates() {
+            $(".utc-date").each(function () {
+                var timestamp = parseInt($(this).attr("data-utc-date-timestamp"));
+                var format = $(this).attr("data-utc-date-output-format");
+                var attributeName = $(this).attr("data-utc-date-output-attribute-name");
+                var formattedOutput = $.format.date(new Date(timestamp), format);
+                if (attributeName === undefined)
+                    $(this).text(formattedOutput);
+                else
+                    $(this).attr(attributeName, formattedOutput);
+            });
+        }
+
+        function showActionMenu(e, $clickedElement) {
+            var id = $clickedElement.closest(".attractionFastPassRequest").attr("id");
+            var deleteUrl = "@Url.Action(nameof(UserController.DeleteAttractionFastPassRequest), nameof(UserController).Replace("Controller", ""), new { AttractionFastPassRequestID = 0 })".replace("0", id);
+            $("#delete").attr("href", deleteUrl);
+            $("#actions").addClass('open');
+            setPosition(e, $("#actions"));
+        }
+
+        function setPosition(e, element) {
+            var bodyOffsets = document.body.getBoundingClientRect();
+            tempX = e.pageX - bodyOffsets.left;
+            tempY = e.pageY;
+            elementWidth = element.children().first().outerWidth(true);
+            console.log(tempX, elementWidth, $(window).width());
+            if (tempX + elementWidth > $(window).width())
+                tempX = $(window).width() - elementWidth;
+            element.css({ 'top': tempY, 'left': tempX });
+        }
+
+        function scrollIntoViewIfNeeded($target, animateOptions) {
+            if ($target.offset()) {
+                if ($target.offset().top < jQuery(window).scrollTop()) {
+                    //scroll up
+                    $('html,body').animate({ scrollTop: $target.offset().top - 100 }, animateOptions);
+                }
+                else if ($target.offset().top + $target.height() >
+                    $(window).scrollTop() + (
+                        window.innerHeight || document.documentElement.clientHeight
+                    )) {
+                    //scroll down
+                    $('html,body').animate({
+                        scrollTop: $target.offset().top -
+                        (window.innerHeight || document.documentElement.clientHeight)
+                        + $target.height() + 100
+                    }, animateOptions);
+                }
+                else {
+                    $('html,body').animate({ scrollTop: jQuery(window).scrollTop() }, animateOptions);
+                }
+            }
+        }
+
+    </script>
+}

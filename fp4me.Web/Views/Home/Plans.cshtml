@@ -1,0 +1,9 @@
+﻿@model IEnumerable<fp4me.Web.Data.Models.UserPlan>
+@{
+    ViewData["Title"] = "Plans";
+}
+<h2>Plans</h2>
+@foreach (var userPlan in Model)
+{
+    <p>@userPlan.Name</p>
+}

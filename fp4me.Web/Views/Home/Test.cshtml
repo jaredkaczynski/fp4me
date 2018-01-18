@@ -1,0 +1,58 @@
+﻿@using fp4me.Web.Controllers
+@using Microsoft.AspNetCore.Http
+@using fp4me.Web.Data
+@{ 
+    var appUser = this.ViewContext.HttpContext.AppUser();
+    ViewData["Title"] = "Test";
+}
+<h2>User Tests</h2>
+<section>
+    @if (appUser.IsAuthenticated)
+    {
+        <p>@Html.ActionLink("Opt out of SMS", nameof(UserController.OptOutOfSMS), nameof(UserController).Replace("Controller", ""), new { phoneNumber = appUser.SMSNotificationPhoneNumber })</p>
+        <p>User.IsActivated: @appUser.IsActivated.ToString().ToUpperInvariant(), @Html.ActionLink("click here", nameof(HomeController.TestBitFlip)) to flip</p>
+    }
+    else
+    {
+        <p>@Html.ActionLink("Sign In", nameof(UserController.SignIn), nameof(UserController).Replace("Controller", "")) to see these tests.</p>
+    }
+</section>
+<h2>Data</h2>
+<section>
+    <p>@Html.ActionLink("GetAttractionFastPassRequestsToProcessAsJson", nameof(DataController.GetAttractionFastPassRequestsToProcessAsJson), nameof(DataController).Replace("Controller", ""))</p>
+    <p>@Html.ActionLink("GetAttractionFastPassRequestsWithStatisticsAsJson", nameof(DataController.GetAttractionFastPassRequestsWithStatisticsAsJson), nameof(DataController).Replace("Controller", ""))</p>
+    <p>@Html.ActionLink("Process", nameof(ProcessController.AttractionFastPassRequests), nameof(ProcessController).Replace("Controller", ""), new { accessToken = this.ViewContext.HttpContext.AppUser().AccessToken })</p>
+</section>
+<h2>Test</h2>
+<section>
+
+    <p>1 seconds ago: @DateTime.UtcNow.AddSeconds(-1).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>35 seconds ago: @DateTime.UtcNow.AddSeconds(-35).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>59 seconds ago: @DateTime.UtcNow.AddSeconds(-59).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>60 seconds ago: @DateTime.UtcNow.AddSeconds(-60).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>120 seconds ago: @DateTime.UtcNow.AddSeconds(-120).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+
+    <p>1 minute ago: @DateTime.UtcNow.AddMinutes(-1).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>35 minutes ago: @DateTime.UtcNow.AddMinutes(-35).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>59 minutes ago: @DateTime.UtcNow.AddMinutes(-59).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>60 minutes ago: @DateTime.UtcNow.AddMinutes(-60).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>120 minutes ago: @DateTime.UtcNow.AddMinutes(-120).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    
+    <p>1 hour ago: @DateTime.UtcNow.AddHours(-1).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>4 hours ago: @DateTime.UtcNow.AddHours(-4).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>23 hours ago: @DateTime.UtcNow.AddHours(-23).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>24 hours ago: @DateTime.UtcNow.AddHours(-24).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>48 hours ago: @DateTime.UtcNow.AddHours(-48).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+
+    <p>1 day ago: @DateTime.UtcNow.AddDays(-1).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>2 days ago: @DateTime.UtcNow.AddDays(-2).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>6 days ago: @DateTime.UtcNow.AddDays(-6).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>7 days ago: @DateTime.UtcNow.AddDays(-7).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+    <p>8 days ago: @DateTime.UtcNow.AddDays(-8).ToRelativeDateString("{0} ago", "just now", 60, 7, "MM/dd/yyyy h:mm:ss tt")</p>
+
+    <p>180 days ago: @DateTime.UtcNow.AddDays(-180).ToRelativeDateString()</p>
+    <p>360 days ago: @DateTime.UtcNow.AddDays(-360).ToRelativeDateString()</p>
+    <p>450 days ago: @DateTime.UtcNow.AddDays(-450).ToRelativeDateString()</p>
+    <p>900 days ago: @DateTime.UtcNow.AddDays(-900).ToRelativeDateString()</p>
+
+</section>

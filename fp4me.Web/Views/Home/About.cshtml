@@ -1,0 +1,63 @@
+﻿@using fp4me.Web.Controllers
+@{
+    ViewData["Title"] = "About";
+}
+<h2>About</h2>
+<h3>
+    The Beginning
+</h3>
+<p>
+    In December 2017, I realized that I missed my opportunity to book Fastpasses for Flight of Passage at my 60-day resort reservation date. I created this app to make sure I found an FOP fastpass and avoid having to tell my family they wouldn't be able to ride FOP for our upcoming trip. It worked! After just 2 days, I found availability and booked the Fastpasses.
+</p>
+<h3>
+    The Middle
+</h3>
+<p>
+    To learn some new tech skills (ASP.NET Core 2.0, Microsoft Azure, MySQL, Twilio, and Bootstrap), I decided to challenge myself and deploy the app for others to use. One weekend in early December 2017, I bought fp4me.com on GoDaddy for $1.99 (<a href="https://whois.icann.org/en/lookup?name=fp4me.com" target="_blank">WHOIS for fp4me.com</a>) and pushed the app live.
+</p>
+<p>
+    I figured I could convince a few friends to try it, and maybe some people that I knew from past Disney trips. By word-of-mouth, things quickly got out-of-control. In just two days, 500 people signed up and I received a lot of "thank you" messages from people that needed Fastpasses.
+</p>
+<h3>
+    Today
+</h3>
+<p>
+    Now, we're at a point where I can keep the site running but need to throttle new signups. It costs money to keep it running (for Azure and Twilio) and I have very little time to maintain it. If you're a current user, thanks for finding fp4me and trying it out. If you're on the waitlist, please be patient and I'll do my best to distribute invites ASAP.
+</p>
+<h3>The Future</h3>
+<p>
+    I have no idea how long fp4me will continue to work. As far as I know, it's not violating any Disney terms, but that doesn't mean they won't change something or ask me to shut it down. In the meantime, I'll just leave it here for people to use.
+</p>
+<h3>What's the Catch?</h3>
+<p>None. Honest. This is just a simple app that I built for myself and am leaving open for others to try.</p>
+<h3>
+    Questions?
+</h3>
+<p>
+    If you have questions, visit the <a asp-action="@nameof(HomeController.Contact)" asp-controller="@nameof(HomeController).Replace("Controller", "")">contact page</a>.
+</p>
+<p>I'll be updating the FAQs below with answers to the most frequently asked questions.</p>
+<h2>FAQs</h2>
+<h3>
+    Why does Disney show no availability after I receive an fp4me notification?
+</h3>
+<p>
+    High demand Fastpasses go quick. Sometimes in a matter of seconds. If fp4me notifies you of availability and you check Disney immediately to find nothing available, it might be because someone else got there first.
+</p>
+<p>I've seen that <a href="https://disneyworld.disney.go.com/fastpass-plus/">the Disney website</a> is updated faster than the mobile app. If you get an fp4me notification and the mobile app isn't showing availability, try the website.</p>
+<p>However, try this - after an fp4me notification, search Disney (either the website or the app) for availability at 1:00 pm. If Disney shows no availability, search for 1:30 pm. Keep searching every timeslot - 2:00 pm, 2:30 pm, 3:00 pm, etc. If you get through every timeslot without seeing any availability, try once more. It sounds crazy but I've seen Disney show availability for a 4:00 pm Fastpass when I search 1:00 pm, but not when I search 3:00 pm, and vice versa. It doesn't make sense. It's wildly inconsistent. If you scan all the timeslots twice and still don't see availability, try checking again after the next fp4me notification.</p>
+<h3>I haven't received any notifications. Is it working?</h3>
+<p>Sometimes it can take days for high demand FPs to become available. Stay patient, fingers crossed, and hopefully something will become available.</p>
+<h3>Can I search for a specific time?</h3>
+<p>No, not currently. You can only search for availability on specific days.</p>
+<h3>I got my Fastpass, how do I stop the text notifications from fp4me?</h3>
+<p>Sign in, and from the page that lists your FP checks, click the trash can icon for the FP check you want to delete.</p>
+<h3>Does this work for non-US phone numbers?</h3>
+<p>Not at this time.</p>
+<h3>How do I delete my account?</h3>
+<p>Send a request through the @Html.ActionLink("contact page", nameof(HomeController.Contact)).</p>
+<hr />
+<h3>Privacy and Terms of Use</h3>
+<p>Some people have asked about privacy related to sharing their phone number for FP availability notifications. Your phone number will not be used by fp4me for any purpose other than sending you notifications, sign in links, and other messages required for the app to function properly for you. Text receipt charges are the responsibility of the receiving the party (fp4me pays to send them). Your phone number will not be sold to any third-party. I'm not really sure what else to put here except that, users use the service at-will and agree not to hold fp4me and its administrator (me!) liable for anything that happens as a result of using the service. If you have any questions and/or want to have your phone number purged from the system, please send requests through the contact page.</p>
+<hr />
+<h3>Thanks for Visiting!</h3>

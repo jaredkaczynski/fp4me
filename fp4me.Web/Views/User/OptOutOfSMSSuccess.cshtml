@@ -1,0 +1,7 @@
+﻿@using fp4me.Web.Controllers
+@{
+    ViewData["Title"] = "Success";
+}
+<h2>Opt Out Successful</h2>
+<p>Your opt out request was successful.</p>
+<button class="btn btn-primary" onclick="window.location='@(Url.Action(nameof(HomeController.Home), nameof(HomeController).Replace("Controller", "")))'">Home Page</button>
