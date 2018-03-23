@@ -12,6 +12,8 @@ using Amazon.SimpleNotificationService;
 using System.Collections.Generic;
 using Helpers.Services;
 using Microsoft.Extensions.Options;
+using System.Collections;
+using System.Reflection;
 
 namespace Disney
 {
@@ -32,49 +34,71 @@ namespace Disney
             var url = "https://disneyworld.disney.go.com/login";
 
             string pep_csrf = "";
+            string access_token = "";
             string PHPSESSID = "";
             string pep_oauth_token = "";
+            CookieContainer cookieContainer = new CookieContainer();
+            System.Net.Http.Headers.HttpResponseHeaders headers;
+            string secure_access_token;
 
             using (var httpClientHandler = new HttpClientHandler())
             {
                 // request the login page from Disney to start a new Disney session
                 var httpClient = new HttpClient(httpClientHandler);
-                HttpResponseMessage response = await httpClient.GetAsync(url);
+                httpClientHandler.CookieContainer = cookieContainer;
+                HttpResponseMessage response = await httpClient.PostAsync("https://authorization.go.com/token?grant_type=assertion&assertion_type=public&client_id=TPR-WDW.AND-PROD",null);
                 string html = await response.Content.ReadAsStringAsync();
-                PHPSESSID = httpClientHandler.CookieContainer.GetCookies(new Uri("https://disneyworld.disney.go.com"))["PHPSESSID"].Value;
-
+                headers = response.Headers;
+       
                 // from the source of the login page, extract the pep_csrf value; this is needed to perform the login
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
-                pep_csrf = doc.DocumentNode.SelectNodes("//input[@name='pep_csrf']")[0].Attributes["value"].Value;
+                ///Get access token aka Bearer token
+                access_token = html.Substring(17,32);
+                httpClient.DefaultRequestHeaders.Add("Authorization", "BEARER " + access_token);
+                // request the login page from Disney to start a new Disney session
+
+                //PHASE 1 Complete
+
+                response = await httpClient.PostAsync("https://api.wdpro.disney.go.com/profile-service/v4/clients/TPR-WDW.AND-PROD/api-key", null);
+                html = await response.Content.ReadAsStringAsync();
+                headers = response.Headers;
+
+
+                IEnumerable<string> values;
+                string session = "";
+                if (headers.TryGetValues("Api-Key", out values))
+                {
+                    session = values.First();
+                }
+                string session2 = "";
+
+                httpClient.DefaultRequestHeaders.Add("x-authorization-gc", "APIKEY " + session);
+
+                if (headers.TryGetValues("X-Conversation-Id", out values))
+                {
+                    session2 = values.First();
+                }
+
+                httpClient.DefaultRequestHeaders.Add("X-Conversation-Id", "X-Conversation-Id " + session2);
+                string jsonStr = "{\"loginValue\":\"" + username + "\",\"password\":\"" + password + "\"}";
+                var content2 = new StringContent(jsonStr, Encoding.UTF8, "application/json");
+
+                response = await httpClient.PostAsync("https://api.wdpro.disney.go.com/profile-service/v4/clients/TPR-WDW.AND-PROD/guests/login", content2);
+                html = await response.Content.ReadAsStringAsync();
+
+                // from the source of the login page, extract the pep_csrf value; this is needed to perform the login
+                doc = new HtmlDocument();
+                doc.LoadHtml(html);
+                secure_access_token = html.Split("access_token")[1].Substring(3, 32);
+                //pep_csrf = doc.DocumentNode.SelectNodes("//input[@name='access_token']");
+
+
             }
 
-            // prepare the request body that will be used to login
-            string content = String.Format("pep_csrf={0}&returnUrl=&username={1}&password={2}&rememberMe=0&submit=", pep_csrf, System.Uri.EscapeDataString(username), System.Uri.EscapeDataString(password));
-            
-            using (var httpClientHandler = new HttpClientHandler())
-            {
-                // prepare the client handler to make the login POST request
-                // 1) add the session id cookie
-                // 2) configure it to NOT follow redirects so that we can pull the oauth token from the response before the redirect happens
-                httpClientHandler.CookieContainer = new CookieContainer();
-                httpClientHandler.CookieContainer.Add(new Uri("http://disneyworld.disney.go.com"), new Cookie("PHPSESSID", PHPSESSID) { Domain = "disneyworld.disney.go.com" });
-                httpClientHandler.AllowAutoRedirect = false;
-                // create the login POST client
-                var httpClient = new HttpClient(httpClientHandler);
-                // add the required form data to the request; see above for how this is prepared - it includes the username and the password
-                var httpContent = new StringContent(content, Encoding.UTF8, "application/x-www-form-urlencoded");
-                // POST to the login page
-                HttpResponseMessage response = await httpClient.PostAsync(url, httpContent);
-                string html = await response.Content.ReadAsStringAsync();
-                // extract the oauth token from the response cookies
-                pep_oauth_token = httpClientHandler.CookieContainer.GetCookies(new Uri("https://disneyworld.disney.go.com"))["pep_oauth_token"].Value; 
-            }
-
-            PEP_OAUTH_TOKEN = pep_oauth_token;
+            PEP_OAUTH_TOKEN = secure_access_token;
             return pep_oauth_token;
         }
-        
         public async System.Threading.Tasks.Task<List<ExperienceFastpassAvailability>> GetFastpassStatus(DateTime date, string startTime, string endTime, string experienceParkID, int numberOfGuests)
         {
             // scott, heather, andrew, hannah:

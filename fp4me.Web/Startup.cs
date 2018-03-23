@@ -60,9 +60,10 @@ namespace fp4me.Web
             services.AddTransient<DataContext, DataContext>();
             services.AddTransient<FacadeContext, FacadeContext>();
 
-            if (CurrentHostingEnvironment.IsProduction())
+            if (CurrentHostingEnvironment.IsProduction() || true)
             {
-                services.AddTransient<ITextSender, TwilioTextSender>();
+                //services.AddTransient<ITextSender, TwilioTextSender>();
+                services.AddTransient<ITextSender, DoNothingTextSender>();
                 services.AddTransient<IDisneyAPI, DisneyAPI>();
             }
             else
